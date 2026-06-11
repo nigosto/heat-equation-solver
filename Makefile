@@ -14,7 +14,7 @@ $(TARGET):
 	$(CC) $(CFLAGS) -o $(TARGET) $(SOURCES)
 
 run: $(TARGET)
-	$(EXEC) -np $(NP) $(TARGET)
+	$(EXEC) -np $(NP) $(TARGET) $(ARGS)
 
 clean:
 	rm -f $(TARGET)	
