@@ -3,7 +3,7 @@
 
 #include "mpi.h"
 
-static MPI_Datatype block_type = MPI_DATATYPE_NULL;
+extern MPI_Datatype block_type;
 
 void init_block_datatype(int lsizes[2]);
 void free_block_datatype();

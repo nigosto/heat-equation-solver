@@ -5,8 +5,8 @@
 Grid from_raw_bytes(const uint8_t* bytes, size_t rows, size_t columns, int max_value) {
   size_t size = rows * columns;
   Grid grid = {
-    .interior_rows = rows,
-    .interior_columns = columns,
+    .interior_rows = rows - 2,
+    .interior_columns = columns - 2,
     .block = malloc(size * sizeof(float)),
     .auxiliary_block = malloc(size * sizeof(float))
   };

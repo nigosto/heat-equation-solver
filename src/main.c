@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
   Domain domain = init_domain_from_file(ctx, argv[1]);
 
   init_halo_exchange(ctx, &domain);
-  for (size_t i = 0; i < 1e6; ++i) {
+  for (size_t i = 0; i < 1e5; ++i) {
     exchange_halos(ctx);
     update_temperature(&domain, r);
   }

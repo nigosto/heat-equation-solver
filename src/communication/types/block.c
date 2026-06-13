@@ -1,6 +1,8 @@
 #include "communication/types/block.h"
 #include "constants.h"
 
+MPI_Datatype block_type = MPI_DATATYPE_NULL;
+
 void init_block_datatype(int lsizes[2]) {
   if (block_type != MPI_DATATYPE_NULL) {
     return;

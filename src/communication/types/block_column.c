@@ -1,5 +1,7 @@
 #include "communication/types/block_column.h"
 
+MPI_Datatype block_column_type = MPI_DATATYPE_NULL;
+
 void init_block_column_datatype(size_t column_size, size_t row_size) {
   if (block_column_type != MPI_DATATYPE_NULL) {
     return;

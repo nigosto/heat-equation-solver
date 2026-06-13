@@ -1,5 +1,7 @@
 #include "communication/types/block_row.h"
 
+MPI_Datatype block_row_type = MPI_DATATYPE_NULL;
+
 void init_block_row_datatype(size_t row_size) {
   if (block_row_type != MPI_DATATYPE_NULL) {
     return;

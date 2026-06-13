@@ -4,7 +4,7 @@
 #include "mpi.h"
 #include <stddef.h>
 
-static MPI_Datatype block_row_type = MPI_DATATYPE_NULL;
+extern MPI_Datatype block_row_type;
 
 void init_block_row_datatype(size_t row_size);
 void free_block_row_datatype();

@@ -3,7 +3,7 @@
 
 #include "mpi.h"
 
-static MPI_Datatype header_type = MPI_DATATYPE_NULL;
+extern MPI_Datatype header_type;
 
 void init_header_datatype();
 void free_header_datatype();

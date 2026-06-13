@@ -1,6 +1,8 @@
 #include "communication/types/header.h"
 #include "pgm/header.h"
 
+MPI_Datatype header_type = MPI_DATATYPE_NULL;
+
 void init_header_datatype() {
   if (header_type != MPI_DATATYPE_NULL) {
     return;

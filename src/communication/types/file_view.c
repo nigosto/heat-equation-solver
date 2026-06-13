@@ -1,6 +1,8 @@
 #include "communication/types/file_view.h"
 #include "constants.h"
 
+MPI_Datatype file_view_type = MPI_DATATYPE_NULL;
+
 void init_file_view_datatype(const Header* header, int lsizes[2], int coords[2]) {
   if (file_view_type != MPI_DATATYPE_NULL) {
     return;

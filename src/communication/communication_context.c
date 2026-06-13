@@ -87,14 +87,13 @@ Domain init_domain_from_file(CommunicationContext ctx, const char* filename) {
   Domain domain;
   domain.header = read_header_from_file(ctx, input_file);
 
-  MPI_Cart_coords(ctx->cartesian_comm.comm, ctx->rank, NDIMS, domain.coords);
-  init_file_view_datatype(&domain.header, ctx->cartesian_comm.dims, domain.coords);
-  
   int lsizes[] = {
     domain.header.height / ctx->cartesian_comm.dims[0],
     domain.header.width / ctx->cartesian_comm.dims[1]
   };
   
+  MPI_Cart_coords(ctx->cartesian_comm.comm, ctx->rank, NDIMS, domain.coords);
+  init_file_view_datatype(&domain.header, lsizes, domain.coords);
   init_block_datatype(lsizes);
   domain.grid = read_grid_from_file(ctx, input_file, &domain.header, lsizes);
 
@@ -124,7 +123,7 @@ void init_halo_exchange(CommunicationContext ctx, const Domain* domain) {
   sendtypes[0] = block_row_type;
 
   sendcounts[1] = 1;
-  sdispls[1] = (interior_rows * interior_columns + 1) * sizeof(float);
+  sdispls[1] = (interior_rows * total_columns + 1) * sizeof(float);
   sendtypes[1] = block_row_type;
 
   sendcounts[2] = 1;
