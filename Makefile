@@ -4,7 +4,7 @@ EXEC = mpiexec
 
 SRC_DIR = src
 
-SOURCES = $(wildcard $(SRC_DIR)/*.c)
+SOURCES = $(shell find $(SRC_DIR) -name '*.c')
 TARGET = main.out
 NP ?= 4
 
