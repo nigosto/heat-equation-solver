@@ -27,6 +27,8 @@ int main(int argc, char** argv) {
   finalize_halo_exchange(ctx);
 
   save_domain_to_file(ctx, &domain, argv[2]);
+
+  free_domain(&domain);
   free_communication_context(&ctx);
 
   return 0;

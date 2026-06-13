@@ -3,7 +3,6 @@
 #include <stddef.h>
 #include <string.h>
 
-// Dirichlet boundary condition
 void update_temperature(Domain* domain, float r) {
   int dims[] = {
     domain->header.height / domain->grid.interior_rows,

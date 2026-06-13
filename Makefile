@@ -11,7 +11,7 @@ NP ?= 4
 all: $(TARGET)
 
 $(TARGET):
-	$(CC) $(CFLAGS) -fopenmp -O3 -march=native -o $(TARGET) $(SOURCES)
+	$(CC) $(CFLAGS) -fopenmp -O3 -march=native -fsanitize=address -o $(TARGET) $(SOURCES)
 
 run: $(TARGET)
 	$(EXEC) -np $(NP) $(TARGET) $(ARGS)
