@@ -21,7 +21,9 @@ void update_temperature(Domain* domain, float r) {
 
   memcpy(block, auxiliary_block, rows * columns * sizeof(float));
 
+  #pragma omp parallel for
   for (size_t i = is_first_row ? 2 : 1; i < rows - (is_last_row ? 2 : 1); ++i) {
+    #pragma omp simd
     for (size_t j = is_first_column ? 2 : 1; j < columns - (is_last_column ? 2 : 1); ++j) {
       auxiliary_block[i * columns + j] = block[i * columns + j] + r * (
         block[i * columns + j + 1] + 
