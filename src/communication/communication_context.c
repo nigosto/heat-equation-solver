@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "communication/communication_context.h"
 #include "communication/communicators/cartesian.h"
 #include "communication/types/file_view.h"
@@ -150,7 +151,11 @@ void init_halo_exchange(CommunicationContext ctx, const Domain* domain) {
   rdispls[3] = (total_columns + interior_columns + 1) * sizeof(float);
   recvtypes[3] = block_column_type;
 
-  MPI_Neighbor_alltoallw_init(domain->grid.block, sendcounts, sdispls, sendtypes, domain->grid.block, recvcounts, rdispls, recvtypes, ctx->cartesian_comm.comm, MPI_INFO_NULL, &ctx->request);
+  MPI_Neighbor_alltoallw_init(
+    domain->grid.block,sendcounts, sdispls, sendtypes, 
+    domain->grid.auxiliary_block, recvcounts, rdispls, recvtypes, 
+    ctx->cartesian_comm.comm, MPI_INFO_NULL, &ctx->request
+  );
 }
 
 void exchange_halos(CommunicationContext ctx) {

@@ -19,6 +19,8 @@ void update_temperature(Domain* domain, float r) {
   size_t columns = domain->grid.interior_columns + 2;
   float *block = domain->grid.block, *auxiliary_block = domain->grid.auxiliary_block;
 
+  memcpy(block, auxiliary_block, rows * columns * sizeof(float));
+
   for (size_t i = is_first_row ? 2 : 1; i < rows - (is_last_row ? 2 : 1); ++i) {
     for (size_t j = is_first_column ? 2 : 1; j < columns - (is_last_column ? 2 : 1); ++j) {
       auxiliary_block[i * columns + j] = block[i * columns + j] + r * (

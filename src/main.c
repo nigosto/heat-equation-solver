@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 int main(int argc, char** argv) {
-  float alpha = 0.01, dh = 1.0, dt = 0.1;
+  float alpha = 0.01, dh = 1.0, dt = 0.5;
   assert(dt < dh * dh / (4 * alpha));
 
   float r = alpha * dt / (dh * dh);
