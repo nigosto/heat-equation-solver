@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
 
   init_halo_exchange(ctx, &domain);
   for (size_t i = 0; i < 1e5; ++i) {
-    exchange_halos(ctx);
+    exchange_halos(ctx, &domain);
     update_temperature(&domain, r);
   }
   finalize_halo_exchange(ctx);

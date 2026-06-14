@@ -15,6 +15,8 @@
 #include "pgm/header.h"
 #include "constants.h"
 
+#define UNUSED(x) (void)(x)
+
 static MPI_Status status;
 
 struct CommunicationContext {
@@ -107,17 +109,14 @@ Domain init_domain_from_file(CommunicationContext ctx, const char* filename) {
   return domain;
 }
 
-void init_halo_exchange(CommunicationContext ctx, const Domain* domain) {
+static void get_halos_exchange_params(
+  const Domain* domain,
+  int *sendcounts, MPI_Aint *sdispls, MPI_Datatype *sendtypes,
+  int *recvcounts, MPI_Aint *rdispls, MPI_Datatype *recvtypes
+) {
   size_t interior_rows = domain->grid.interior_rows;
   size_t interior_columns = domain->grid.interior_columns;
   size_t total_columns = interior_columns + 2;
-
-  init_block_row_datatype(interior_columns);
-  init_block_column_datatype(interior_rows, interior_columns);
-
-  int sendcounts[4], recvcounts[4];
-  MPI_Aint sdispls[4], rdispls[4];
-  MPI_Datatype sendtypes[4], recvtypes[4];
 
   sendcounts[0] = 1;
   sdispls[0] = (total_columns + 1) * sizeof(float);
@@ -150,21 +149,58 @@ void init_halo_exchange(CommunicationContext ctx, const Domain* domain) {
   recvcounts[3] = 1;
   rdispls[3] = (total_columns + interior_columns + 1) * sizeof(float);
   recvtypes[3] = block_column_type;
-
-  MPI_Neighbor_alltoallw_init(
-    domain->grid.block,sendcounts, sdispls, sendtypes, 
-    domain->grid.auxiliary_block, recvcounts, rdispls, recvtypes, 
-    ctx->cartesian_comm.comm, MPI_INFO_NULL, &ctx->request
-  );
 }
 
-void exchange_halos(CommunicationContext ctx) {
-  MPI_Start(&ctx->request);
-  MPI_Wait(&ctx->request, &status); 
+void init_halo_exchange(CommunicationContext ctx, const Domain* domain) {
+  size_t interior_rows = domain->grid.interior_rows;
+  size_t interior_columns = domain->grid.interior_columns;
+
+  init_block_row_datatype(interior_columns);
+  init_block_column_datatype(interior_rows, interior_columns);
+
+  /* 
+    OpenMPI 5 supports persistent collective operations, but since it doesn't 
+    support the full MPI 4 standard, the version is set to 3
+  */
+  #if (MPI_VERSION >= 4) || (OMPI_MAJOR_VERSION >= 5)
+    int sendcounts[4], recvcounts[4];
+    MPI_Aint sdispls[4], rdispls[4];
+    MPI_Datatype sendtypes[4], recvtypes[4];
+  
+    get_halos_exchange_params(domain, sendcounts, sdispls, sendtypes, recvcounts, rdispls, recvtypes);
+  
+    MPI_Neighbor_alltoallw_init(
+      domain->grid.block,sendcounts, sdispls, sendtypes, 
+      domain->grid.auxiliary_block, recvcounts, rdispls, recvtypes, 
+      ctx->cartesian_comm.comm, MPI_INFO_NULL, &ctx->request
+    );
+  #endif
+}
+
+void exchange_halos(CommunicationContext ctx, const Domain* domain) {
+  #if (MPI_VERSION >= 4) || (OMPI_MAJOR_VERSION > 4)
+    UNUSED(domain);
+    MPI_Start(&ctx->request);
+    MPI_Wait(&ctx->request, &status); 
+  #else
+    int sendcounts[4], recvcounts[4];
+    MPI_Aint sdispls[4], rdispls[4];
+    MPI_Datatype sendtypes[4], recvtypes[4];
+  
+    get_halos_exchange_params(domain, sendcounts, sdispls, sendtypes, recvcounts, rdispls, recvtypes);
+
+    MPI_Neighbor_alltoallw(
+      domain->grid.block,sendcounts, sdispls, sendtypes, 
+      domain->grid.auxiliary_block, recvcounts, rdispls, recvtypes, 
+      ctx->cartesian_comm.comm
+    );
+  #endif
 }
 
 void finalize_halo_exchange(CommunicationContext ctx) {
-  MPI_Request_free(&ctx->request);
+  #if (MPI_VERSION >= 4) || (OMPI_MAJOR_VERSION > 4)
+    MPI_Request_free(&ctx->request);
+  #endif
 
   free_block_row_datatype();
   free_block_column_datatype();
