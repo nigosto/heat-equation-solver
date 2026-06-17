@@ -26,7 +26,8 @@ struct CommunicationContext {
 };
 
 void init_communication_context(int* argc, char*** argv, CommunicationContext* ctx) {
-  MPI_Init(argc, argv);
+  int provided;
+  MPI_Init_thread(argc, argv, MPI_THREAD_FUNNELED, &provided);
 
   struct CommunicationContext* local_ctx = malloc(sizeof(struct CommunicationContext));
 
